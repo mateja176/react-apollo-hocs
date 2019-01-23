@@ -3,11 +3,7 @@ import { Mutation } from 'react-apollo';
 
 const withMutation = mutation => Component => props => (
   <Mutation mutation={mutation}>
-    {(_mutation, result) => (
-      // result = { loading, error, data }
-      // mutation optionally takes in variables
-      <Component mutation={_mutation} {...result} {...props} />
-    )}
+    {(_mutation, result) => <Component mutation={_mutation} {...result} {...props} />}
   </Mutation>
 );
 
