@@ -2,7 +2,7 @@ import * as React from 'react';
 import { graphql } from 'react-apollo';
 
 const withQuery = query => Component => graphql(query)(
-  class extends React.Component {
+  class WithQuery extends React.Component {
     constructor(props) {
       super(props);
 
