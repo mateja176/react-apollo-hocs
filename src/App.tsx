@@ -2,7 +2,8 @@ import * as React from "react";
 import "./App.scss";
 import ApolloClient from "apollo-boost";
 import { ApolloProvider } from "react-apollo";
-import Users from "./Users";
+import UsersWithGraphql from "./UsersWithGraphql";
+import UsersWithQuery from "./UsersWithQuery";
 
 const client = new ApolloClient({
   uri: "https://json-placeholder-graphql.herokuapp.com/graphql"
@@ -10,7 +11,8 @@ const client = new ApolloClient({
 
 const App = () => (
   <ApolloProvider client={client}>
-    <Users />
+    <UsersWithGraphql header="Users with `graphql`" />
+    <UsersWithQuery header="Users with `query`" />
   </ApolloProvider>
 );
 
