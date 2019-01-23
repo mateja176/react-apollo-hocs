@@ -1,9 +1,9 @@
 import * as React from "react";
-import { Mutation, MutationResult } from "react-apollo";
+import { Mutation, MutationFn, MutationResult } from "react-apollo";
 
-const withMutation = <Variables, Data>(mutation: any) => <Props extends {}>(
+const withMutation = <Data, Variables>(mutation: any) => <Props extends {}>(
   Component: React.ComponentType<
-    Props & { mutation: any } & MutationResult<Data>
+    Props & { mutation: MutationFn<Data, Variables> } & MutationResult<Data>
   >
 ) => (props: Props) => (
   <Mutation<Data, Variables> mutation={mutation}>
