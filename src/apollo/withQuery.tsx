@@ -1,52 +1,48 @@
+import { ApolloQueryResult } from "apollo-boost";
 import * as React from "react";
-// QueryResult contains additional properties
-import { graphql, QueryResult } from "react-apollo";
+import { withApollo } from "react-apollo";
+import client, { Client } from "./client";
 
-export type WithQueryState<Data, Variables = {}> = {
-  loading: boolean;
-  error: { graphQLErrors: { message: string }[] };
-  data: Data;
-  refetch: (variables?: Variables) => void;
+const graphQLQuery = <Data, Variables = {}>(apolloClient: Client) => (
+  query: any
+) => <Props extends {}>(
+  component: React.Component<Props, ApolloQueryResult<Data>>
+) => async (variables?: Variables) => {
+  component.setState({ loading: true });
+
+  try {
+    const result = await apolloClient.query<Data, Variables>({
+      query,
+      variables
+    });
+
+    component.setState(result);
+  } catch (errors) {
+    component.setState({ errors });
+  }
+
+  component.setState({ loading: false });
 };
 
-export type WithQueryProps<Data, Variables = {}> = WithQueryState<
-  Data,
-  Variables
-> & { query: (variables?: Variables) => void };
-
-const withQuery = <Data, Variables = {}>(query: any) => <Props extends {}>(
-  Component: React.ComponentType<Props & WithQueryProps<Data, Variables>>
+const withQuery = <Data, Variables>(query: any) => <Props extends {}>(
+  Component: React.ComponentType<
+    Props & ApolloQueryResult<Data> & { query: (variables?: Variables) => void }
+  >
 ) =>
-  graphql<Props, Data, Variables>(query)(
-    class WithQuery extends React.Component<
-      Props,
-      WithQueryState<Data, Variables>
-    > {
-      state = {
-        loading: false,
-        error: null,
-        data: null,
-        refetch: () => {}
-      };
-
-      query = async (variables?: Variables) => {
-        this.setState({ loading: true });
-
-        try {
-          const { data, refetch } = await query({ variables });
-
-          this.setState({ data, refetch });
-        } catch (error) {
-          this.setState(error);
-        }
-
-        this.setState({ loading: false });
-      };
+  withApollo(
+    class WithQuery extends React.Component<Props & { client: Client }> {
+      state: ApolloQueryResult<Data>;
 
       render() {
         const { props, state } = this;
 
-        return <Component query={this.query} {...state} {...props} />;
+        return (
+          <Component
+            {...props}
+            {...state}
+            query={graphQLQuery(client)(query)(this)}
+          />
+        );
       }
     }
   );
