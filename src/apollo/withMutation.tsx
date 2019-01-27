@@ -8,7 +8,7 @@ const withMutation = <Data, Variables>(mutation: any) => <Props extends {}>(
 ) => (props: Props) => (
   <Mutation<Data, Variables> mutation={mutation}>
     {(_mutation, result) => (
-      <Component mutation={_mutation} {...result} {...props} />
+      <Component {...props} {...result} mutation={_mutation} />
     )}
   </Mutation>
 );
