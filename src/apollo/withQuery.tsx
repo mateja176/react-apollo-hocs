@@ -3,7 +3,7 @@ import * as React from "react";
 import { withApollo } from "react-apollo";
 import client, { Client } from "./client";
 
-const graphQLQuery = <Data, Variables = {}>(apolloClient: Client) => (
+const createQuery = <Data, Variables = {}>(apolloClient: Client) => (
   query: any
 ) => <Props extends {}>(
   component: React.Component<Props, ApolloQueryResult<Data>>
@@ -40,7 +40,7 @@ const withQuery = <Data, Variables>(query: any) => <Props extends {}>(
           <Component
             {...props}
             {...state}
-            query={graphQLQuery(client)(query)(this)}
+            query={createQuery(client)(query)(this)}
           />
         );
       }
